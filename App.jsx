@@ -17,6 +17,7 @@ import {Camera, useCameraDevice} from 'react-native-vision-camera';
 import Video from 'react-native-video';
 
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
+import Share from 'react-native-share';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -71,6 +72,8 @@ function App() {
   if (isLoading) {
     return (
       <ActivityIndicator
+        size="large"
+        color="#3CF33A"
         style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
       />
     );
@@ -79,6 +82,8 @@ function App() {
   if (device == null)
     return (
       <ActivityIndicator
+        size="large"
+        color="#3CF33A"
         style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
       />
     );
@@ -149,6 +154,25 @@ function App() {
       }
     };
 
+    const handleShareVideo = async () => {
+      try {
+        if (recordedVideo && recordedVideo.path) {
+          const options = {
+            title: 'Share Video',
+            message: 'Check out this Video Recorded with Secret Face Changer!',
+            url: `file://${recordedVideo.path}`,
+            type: 'video/mp4',
+          };
+          await Share.open(options);
+          ToastAndroid.show('Video Shared', ToastAndroid.SHORT);
+        } else {
+          ToastAndroid.show('No video to share', ToastAndroid.SHORT);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     const handleDiscardVideo = () => {
       Alert.alert(
         'Discard Video',
@@ -210,6 +234,12 @@ function App() {
           onPress={handleSaveVideo}
           style={{position: 'absolute', top: 60, right: 20}}>
           <Icon name="download" size={30} color="white" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handleShareVideo}
+          style={{position: 'absolute', top: 100, right: 20}}>
+          <Icon name="share-social" size={30} color="white" />
         </TouchableOpacity>
       </SafeAreaView>
     );
